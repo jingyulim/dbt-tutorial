@@ -23,11 +23,12 @@ customers as (
 -- logical CTEs
 , failed_payments as (
     select 
-        orderid as order_id
-        , max(created) as payment_finalized_date, sum(amount) / 100.0 as total_amount_paid        
+        order_id
+        , max(payment_created_at) as payment_finalized_date
+        , sum(payment_amount) as total_amount_paid        
 
     from payments
-    where status <> 'fail'
+    where payment_status <> 'fail'
     group by 1
 )
 
