@@ -16,21 +16,23 @@ customers as (
 , final as (
     select
         *
-        , row_number() over (order by order_id) as transaction_seq
-        , row_number() over (partition by customer_id order by order_id) as customer_sales_seq
+        , row_number() over (order by paid_orders.order_id) as transaction_seq
+        , row_number() over (partition by paid_orders.customer_id order by paid_orders.order_id) as customer_sales_seq
 
         , case 
             when (
-                rank() over(partition by customer_id order by order_placed_at, order_id) = 1
+                rank() over(partition by paid_orders.customer_id order by paid_orders.order_placed_at, paid_orders.order_id) = 1
             ) then 'new'
             else 'return' 
           end as nvsr
         
-        , sum(total_amount_paid) over(partition by customer_id order by order_id rows between unbounded preceding and current row) as customer_lifetime_value
+        , sum(paid_orders.total_amount_paid) over(
+            partition by paid_orders.ustomer_id order by paid_orders.order_id rows between unbounded preceding and current row\
+          ) as customer_lifetime_value
 
         -- first day of sale
-        , first_value(order_placed_at) over (
-            partition by customer_id order by order_placed_at
+        , first_value(paid_orders.order_placed_at) over (
+            partition by paid_orders.customer_id order by paid_orders.order_placed_at
           ) as fdos
 
         , customers.customer_first_name
