@@ -1,10 +1,30 @@
 -- with statement
+with 
+
 -- import CTEs
+, customers as (
+
+  select * from {{ source('jaffle_shop', 'customers') }}
+
+)
+
+, orders as (
+
+  select * from {{ source('jaffle_shop', 'orders') }}
+
+)
+
+, payments as (
+
+  select * from {{ source('stripe', 'payment') }}
+
+)
+
 -- logical CTEs
 -- final CTE
 -- simple select statement
 
-with paid_orders as (
+paid_orders as (
     select 
         Orders.ID as order_id
         , Orders.USER_ID as customer_id
@@ -15,17 +35,17 @@ with paid_orders as (
         , C.FIRST_NAME as customer_first_name
         , C.LAST_NAME as customer_last_name
 
-    from {{ source('jaffle_shop', 'orders') }} as Orders
+    from orders
     left join (
         select 
             ORDERID as order_id
             , max(CREATED) as payment_finalized_date, sum(AMOUNT) / 100.0 as total_amount_paid        
 
-        from {{ source('stripe', 'payments') }}
+        from payments
         where status <> 'fail'
         group by 1
-    ) p ON orders.ID = p.order_id
-    left join {{ source('jaffle_shop', 'customers') }} C on orders.USER_ID = C.ID 
+    ) p on orders.ID = p.order_id
+    left join customers C on orders.USER_ID = C.ID 
 ),
 
 customer_orders as (
@@ -35,8 +55,8 @@ customer_orders as (
         , max(ORDER_DATE) as most_recent_order_date
         , count(ORDERS.ID) as number_of_orders
 
-    from {{ source('jaffle_shop', 'customers') }} C 
-    left join {{ source('jaffle_shop', 'orders') }} as Orders on orders.USER_ID = C.ID 
+    from customers C 
+    left join orders on orders.USER_ID = C.ID 
     group by 1
 )
 
