@@ -23,8 +23,8 @@ with
 -- logical CTEs
 , failed_payments as (
     select 
-        ORDERID as order_id
-        , max(CREATED) as payment_finalized_date, sum(AMOUNT) / 100.0 as total_amount_paid        
+        orderid as order_id
+        , max(created) as payment_finalized_date, sum(AMOUNT) / 100.0 as total_amount_paid        
 
     from payments
     where status <> 'fail'
@@ -58,9 +58,9 @@ with
 , customer_orders as (
     select 
         customers.id as customer_id
-        , min(ORDER_DATE) as first_order_date
-        , max(ORDER_DATE) as most_recent_order_date
-        , count(ORDERS.ID) as number_of_orders
+        , min(order_date) as first_order_date
+        , max(order_date) as most_recent_order_date
+        , count(orders.id) as number_of_orders
 
     from customers 
     left join orders on orders.user_id = customers.id 
