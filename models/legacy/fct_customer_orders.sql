@@ -21,7 +21,7 @@ customers as (
 )
 
 -- logical CTEs
-, failed_payments as (
+, completed_payments as (
     select 
         order_id
         , max(payment_created_at) as payment_finalized_date
@@ -38,13 +38,13 @@ customers as (
         , orders.customer_id
         , orders.order_placed_at
         , orders.order_status
-        , failed_payments.total_amount_paid
-        , failed_payments.payment_finalized_date
+        , completed_payments.total_amount_paid
+        , completed_payments.payment_finalized_date
         , customers.customer_first_name
         , customers.customer_last_name
 
     from orders
-    left join failed_payments on orders.order_id = failed_payments.order_id
+    left join completed_payments on orders.order_id = completed_payments.order_id
     left join customers on orders.customer_id = customers.customer_id
 )
 
