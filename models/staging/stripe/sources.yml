@@ -1,7 +1,7 @@
 version: 2
 
 sources:
-  - name: jaffle_shop
+  - name: stripe
     database: iconic-setup-397307
     schema: jingyu_test
     tables:
