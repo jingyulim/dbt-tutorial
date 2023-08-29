@@ -1,7 +1,7 @@
 with paid_orders as (
     select 
         Orders.ID as order_id
-        , Orders.USER_ID	as customer_id
+        , Orders.USER_ID as customer_id
         , Orders.ORDER_DATE as order_placed_at
         , Orders.STATUS as order_status
         , p.total_amount_paid
@@ -27,7 +27,7 @@ customer_orders as (
         C.ID as customer_id
         , min(ORDER_DATE) as first_order_date
         , max(ORDER_DATE) as most_recent_order_date
-        , count(ORDERS.ID) AS number_of_orders
+        , count(ORDERS.ID) as number_of_orders
 
     from {{ source('jaffle_shop', 'customers') }} C 
     left join {{ source('jaffle_shop', 'orders') }} as Orders on orders.USER_ID = C.ID 
@@ -37,16 +37,16 @@ customer_orders as (
 select
     p.*
     , row_number() over (order by p.order_id) as transaction_seq
-    , ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY p.order_id) as customer_sales_seq
-    , CASE 
-        WHEN c.first_order_date = p.order_placed_at THEN 'new'
-        ELSE 'return' 
-      END as nvsr
+    , ROW_NUMBER() over (partition by customer_id order by p.order_id) as customer_sales_seq
+    , case 
+        when c.first_order_date = p.order_placed_at then 'new'
+        else 'return' 
+      end as nvsr
     , x.clv_bad as customer_lifetime_value
     , c.first_order_date as fdos
 
 from paid_orders p
-left join customer_orders as c USING (customer_id)
+left join customer_orders as c using (customer_id)
 left outer join (
     select
         p.order_id,
