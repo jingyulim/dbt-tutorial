@@ -71,7 +71,11 @@ with
           end as nvsr
         
         , order_clv.clv_bad as customer_lifetime_value
-        , customer_orders.first_order_date as fdos
+
+        -- first day of sale
+        , first_value(paid_orders.order_placed_at) over (
+            partition by paid_orders.customer_id order by paid_orders.order_placed_at
+          ) as fdos
 
     from paid_orders
     left outer join order_clv on order_clv.order_id = paid_orders.order_id
