@@ -1,3 +1,9 @@
+-- with statement
+-- import CTEs
+-- logical CTEs
+-- final CTE
+-- simple select statement
+
 with paid_orders as (
     select 
         Orders.ID as order_id
