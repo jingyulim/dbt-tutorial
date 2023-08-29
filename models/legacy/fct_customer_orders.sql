@@ -73,7 +73,6 @@ with
 )
 
 -- final CTE
-
 , final as (
     select
         p.*
@@ -82,7 +81,7 @@ with
         , case 
             when c.first_order_date = p.order_placed_at then 'new'
             else 'return' 
-        end as nvsr
+          end as nvsr
         , x.clv_bad as customer_lifetime_value
         , c.first_order_date as fdos
 
