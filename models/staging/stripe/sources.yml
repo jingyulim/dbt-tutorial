@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: jaffle_shop
+    database: iconic-setup-397307
+    schema: jingyu_test
+    tables:
+      - name: payments
