@@ -47,14 +47,6 @@ customers as (
     left join customers on orders.user_id = customers.id
 )
 
-, order_clv as (
-    select
-        order_id
-        , sum(total_amount_paid) over(partition by customer_id order by order_id rows between unbounded preceding and current row) as clv_bad
-    
-    from paid_orders
-)
-
 -- final CTE
 , final as (
     select
@@ -70,7 +62,7 @@ customers as (
             else 'return' 
           end as nvsr
         
-        , order_clv.clv_bad as customer_lifetime_value
+        , sum(total_amount_paid) over(partition by customer_id order by order_id rows between unbounded preceding and current row) as customer_lifetime_value
 
         -- first day of sale
         , first_value(paid_orders.order_placed_at) over (
@@ -78,8 +70,6 @@ customers as (
           ) as fdos
 
     from paid_orders
-    left outer join order_clv on order_clv.order_id = paid_orders.order_id
-
     order by order_id
 )
 
