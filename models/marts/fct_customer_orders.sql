@@ -15,7 +15,7 @@ customers as (
 -- final CTE
 , final as (
     select
-        *
+        paid_orders.*
         , row_number() over (order by paid_orders.order_id) as transaction_seq
         , row_number() over (partition by paid_orders.customer_id order by paid_orders.order_id) as customer_sales_seq
 
@@ -27,7 +27,7 @@ customers as (
           end as nvsr
         
         , sum(paid_orders.total_amount_paid) over(
-            partition by paid_orders.ustomer_id order by paid_orders.order_id rows between unbounded preceding and current row\
+            partition by paid_orders.customer_id order by paid_orders.order_id rows between unbounded preceding and current row
           ) as customer_lifetime_value
 
         -- first day of sale
