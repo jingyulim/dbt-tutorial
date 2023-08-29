@@ -78,7 +78,7 @@ with
     select
         p.*
         , row_number() over (order by p.order_id) as transaction_seq
-        , ROW_NUMBER() over (partition by customer_id order by p.order_id) as customer_sales_seq
+        , row_number() over (partition by customer_id order by p.order_id) as customer_sales_seq
         , case 
             when c.first_order_date = p.order_placed_at then 'new'
             else 'return' 
