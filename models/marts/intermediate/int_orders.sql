@@ -1,3 +1,5 @@
+-- contains 1 row per order_id with payment details (e.g. payment date and amount)
+
 with 
 
 orders as (
@@ -34,7 +36,6 @@ orders as (
 
     from orders
     left join completed_payments on orders.order_id = completed_payments.order_id
-
 )
 
 select * from paid_orders
