@@ -31,19 +31,6 @@ with
     group by 1
 )
 
-, order_clv as (
-    select
-        p.order_id,
-        sum(t2.total_amount_paid) as clv_bad
-    
-    from paid_orders p
-    left join paid_orders t2 
-        on p.customer_id = t2.customer_id 
-        and p.order_id >= t2.order_id
-    group by 1
-    order by p.order_id
-)
-
 , paid_orders as (
     select 
         Orders.ID as order_id
@@ -58,6 +45,14 @@ with
     from orders
     left join failed_payments p on orders.ID = p.order_id
     left join customers C on orders.USER_ID = C.ID 
+)
+
+, order_clv as (
+    select
+        order_id
+        , sum(total_amount_paid) over(partition by customer_id order by order_id rows between unbounded preceding and current row) as clv_bad
+    
+    from paid_orders p
 )
 
 , customer_orders as (
