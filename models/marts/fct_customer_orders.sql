@@ -69,7 +69,12 @@ customers as (
             partition by customer_id order by order_placed_at
           ) as fdos
 
+        , customers.customer_first_name
+        , customers.customer_last_name
+
     from paid_orders
+    left join customers on paid_orders.customer_id = customers.customer_id
+
     order by order_id
 )
 
