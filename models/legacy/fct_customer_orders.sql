@@ -73,21 +73,25 @@ with
 )
 
 -- final CTE
+
+, final as (
+    select
+        p.*
+        , row_number() over (order by p.order_id) as transaction_seq
+        , ROW_NUMBER() over (partition by customer_id order by p.order_id) as customer_sales_seq
+        , case 
+            when c.first_order_date = p.order_placed_at then 'new'
+            else 'return' 
+        end as nvsr
+        , x.clv_bad as customer_lifetime_value
+        , c.first_order_date as fdos
+
+    from paid_orders p
+    left join customer_orders as c using (customer_id)
+    left outer join order_clv x on x.order_id = p.order_id
+
+    order by order_id
+)
+
 -- simple select statement
-
-select
-    p.*
-    , row_number() over (order by p.order_id) as transaction_seq
-    , ROW_NUMBER() over (partition by customer_id order by p.order_id) as customer_sales_seq
-    , case 
-        when c.first_order_date = p.order_placed_at then 'new'
-        else 'return' 
-      end as nvsr
-    , x.clv_bad as customer_lifetime_value
-    , c.first_order_date as fdos
-
-from paid_orders p
-left join customer_orders as c using (customer_id)
-left outer join order_clv x on x.order_id = p.order_id
-
-order by order_id
+select * from final
