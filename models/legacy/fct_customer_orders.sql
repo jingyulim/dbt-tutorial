@@ -39,12 +39,12 @@ customers as (
         , orders.status as order_status
         , failed_payments.total_amount_paid
         , failed_payments.payment_finalized_date
-        , customers.first_name as customer_first_name
-        , customers.last_name as customer_last_name
+        , customers.customer_first_name
+        , customers.customer_last_name
 
     from orders
     left join failed_payments on orders.id = failed_payments.order_id
-    left join customers on orders.user_id = customers.id
+    left join customers on orders.user_id = customers.customer_id
 )
 
 -- final CTE
