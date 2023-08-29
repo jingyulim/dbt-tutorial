@@ -61,10 +61,15 @@ with
         paid_orders.*
         , row_number() over (order by paid_orders.order_id) as transaction_seq
         , row_number() over (partition by customer_id order by paid_orders.order_id) as customer_sales_seq
+
         , case 
-            when customer_orders.first_order_date = paid_orders.order_placed_at then 'new'
+            when (
+                -- customer_orders.first_order_date = paid_orders.order_placed_at 
+                rank() over(partition by customer_id order by order_placed_at, order_id) = 1
+            ) then 'new'
             else 'return' 
           end as nvsr
+        
         , order_clv.clv_bad as customer_lifetime_value
         , customer_orders.first_order_date as fdos
 
