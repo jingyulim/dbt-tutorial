@@ -44,10 +44,7 @@ with
     order by p.order_id
 )
 
--- final CTE
--- simple select statement
-
-paid_orders as (
+, paid_orders as (
     select 
         Orders.ID as order_id
         , Orders.USER_ID as customer_id
@@ -61,9 +58,9 @@ paid_orders as (
     from orders
     left join failed_payments p on orders.ID = p.order_id
     left join customers C on orders.USER_ID = C.ID 
-),
+)
 
-customer_orders as (
+, customer_orders as (
     select 
         C.ID as customer_id
         , min(ORDER_DATE) as first_order_date
@@ -74,6 +71,9 @@ customer_orders as (
     left join orders on orders.USER_ID = C.ID 
     group by 1
 )
+
+-- final CTE
+-- simple select statement
 
 select
     p.*
