@@ -33,18 +33,18 @@ customers as (
 
 , paid_orders as (
     select 
-        orders.id as order_id
-        , orders.user_id as customer_id
-        , orders.order_date as order_placed_at
-        , orders.status as order_status
+        orders.order_id
+        , orders.customer_id
+        , orders.order_placed_at
+        , orders.order_status
         , failed_payments.total_amount_paid
         , failed_payments.payment_finalized_date
         , customers.customer_first_name
         , customers.customer_last_name
 
     from orders
-    left join failed_payments on orders.id = failed_payments.order_id
-    left join customers on orders.user_id = customers.customer_id
+    left join failed_payments on orders.order_id = failed_payments.order_id
+    left join customers on orders.customer_id = customers.customer_id
 )
 
 -- final CTE
